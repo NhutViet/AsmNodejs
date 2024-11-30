@@ -37,21 +37,31 @@ router.get("/gia", async function (req, res) {
     const token = req.header("Authorization").split(" ")[1];
     if (token) {
       JWT.verify(token, config.SECRETKEY, async function (err, id) {
-        const { giaTien } = req.query;
-        const data = await bookModel.find({ giaTien: { $gt: giaTien } });
-        res.status(200).json(data);
+        if (err) {
+          res
+            .status(403)
+            .json({ status: false, message: "lỗi xảy ra, token hết hạn" });
+        } else {
+          const { giaTien } = req.query;
+          const data = await bookModel.find({ giaTien: { $gt: giaTien } });
+          res.status(200).json(data);
+        }
       });
     } else {
       res.status(401).json({ status: false, message: "không xác thực" });
     }
-  } catch (e) {
-    res.status(400).json({ status: false, message: e });
+  } catch (err) {
+    res.status(400).json({ status: false, message: err });
   }
 });
 
 //lấy danh sách từ 60000 => 100000
 // http://localhost:3000/books/giaMaxMin?min=60000&max=100000
 router.get("/giaMaxMin", async function (req, res) {
+  const token = req.header("Authorization").split(" ")[1];
+  if (token) {
+    JWT.verify(token, config.SECRETKEY, async function (err, id) {});
+  }
   try {
     const { max, min } = req.query;
     const data = await bookModel.find({ giaTien: { $gt: min, $lt: max } });
