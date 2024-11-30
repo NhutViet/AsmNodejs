@@ -34,9 +34,16 @@ router.get("/all", async function (req, res, next) {
 // http://localhost:3000/books/gia?giaTien=100000
 router.get("/gia", async function (req, res) {
   try {
-    const { giaTien } = req.query;
-    const data = await bookModel.find({ giaTien: { $gt: giaTien } });
-    res.status(200).json(data);
+    const token = req.header("Authorization").split(" ")[1];
+    if (token) {
+      JWT.verify(token, config.SECRETKEY, async function (err, id) {
+        const { giaTien } = req.query;
+        const data = await bookModel.find({ giaTien: { $gt: giaTien } });
+        res.status(200).json(data);
+      });
+    } else {
+      res.status(401).json({ status: false, message: "không xác thực" });
+    }
   } catch (e) {
     res.status(400).json({ status: false, message: e });
   }

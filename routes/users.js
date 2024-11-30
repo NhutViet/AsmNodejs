@@ -9,6 +9,8 @@ router.get("/all", async function (req, res, next) {
   res.status(200).json(data);
 });
 
+// https://asmnodejs-31p1.onrender.com/users/login
+
 router.post("/login", async function (req, res) {
   try {
     const { userName, passWord } = req.body;
